@@ -48,7 +48,7 @@ class Game extends React.Component {
   }
 
   makeMove(i) {
-    if (this.state.board[i] !== '-') {
+    if (determineWinner(this.state.board) || this.state.board[i] !== '-') {
       return
     }
     this.state.board[i] = this.state.isXTurn ? 'X' : 'O'
@@ -64,11 +64,24 @@ class Game extends React.Component {
   }
 
   render() {
+
+    var status
+    var winner = determineWinner(this.state.board)
+    if (winner === null) {
+      status = 'Next player: ' + (this.state.isXTurn ? 'X' : 'O')
+    }
+    else if (winner !== '-') {
+      status = 'Winner: ' + winner
+    }
+    else {
+      status = 'Undecided!'
+    }
+
     return (
       <div className='game'>
         <Board board={this.state.board} onClick={(i) => this.makeMove(i)}/>
         <div className='game-info'>
-          <div>Next player: O</div>
+          <div>{status}</div>
           <ol><button onClick={() => this.reset()}>Reset game</button></ol>
         </div>
       </div>
@@ -78,3 +91,31 @@ class Game extends React.Component {
 
 var domRoot = ReactDOM.createRoot(document.getElementById('game'))
 domRoot.render(<Game />)
+
+function determineWinner(board) {
+  var sequences = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ]
+
+  for (var i = 0; i < sequences.length; i++) {
+    var [a, b, c] = sequences[i]
+    if (board[a] !== '-' && board[a] === board[b] && board[a] === board[c]) {
+      return board[a]
+    }
+  }
+
+  for (var i = 0; i < 9; i++) {
+    if (board[i] === '-') {
+      return null
+    }
+  }
+
+  return '-'
+}
