@@ -6,7 +6,7 @@ class Board extends React.Component {
       text = null
     }
     return (
-      <button className='square'>
+      <button className='square' onClick={() => this.props.onClick(i)}>
         {text}
       </button>
     )
@@ -47,13 +47,29 @@ class Game extends React.Component {
     }
   }
 
+  makeMove(i) {
+    if (this.state.board[i] !== '-') {
+      return
+    }
+    this.state.board[i] = this.state.isXTurn ? 'X' : 'O'
+    this.state.isXTurn = !this.state.isXTurn
+    this.setState({})
+  }
+
+  reset() {
+    this.setState({
+      board: ['-', '-', '-', '-', '-', '-', '-', '-', '-'],
+      isXTurn: true,
+    })
+  }
+
   render() {
     return (
       <div className='game'>
-        <Board board={this.state.board}/>
+        <Board board={this.state.board} onClick={(i) => this.makeMove(i)}/>
         <div className='game-info'>
           <div>Next player: O</div>
-          <ol><button>Reset game</button></ol>
+          <ol><button onClick={() => this.reset()}>Reset game</button></ol>
         </div>
       </div>
     )
